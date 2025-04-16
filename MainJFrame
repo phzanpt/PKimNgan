@@ -1,0 +1,200 @@
+package com.mycompany.kimngan;
+
+import java.awt.Color;
+import java.awt.Font;
+import java.util.List;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableModel;
+
+/**
+ *
+ * @author Admin
+ */
+public class MainJFrame extends javax.swing.JFrame {
+        private JTextField txtId, txtName, txtMarks, txtSearch;
+    private JTable tblStudents;
+    private DefaultTableModel tableModel;
+    private final StudentController controller;
+    
+    public MainJFrame() 
+    {   
+        initComponents1();
+        controller = new StudentController();
+      
+        
+    }
+    private void initComponents1() {
+    setTitle("Student Management App");
+    setSize(800, 500);
+    setDefaultCloseOperation(MainJFrame.EXIT_ON_CLOSE);
+    setLayout(null);
+
+    JLabel lblTitle = new JLabel("STUDENT MANAGEMENT");
+    lblTitle.setBounds(0, 10, 800, 40);
+    lblTitle.setFont(new Font("Arial", Font.BOLD, 28));
+    lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
+    lblTitle.setForeground(Color.pink);
+    add(lblTitle);
+
+    int labelX = 20, labelW = 100, tfX = 130, tfW = 180, height = 25, top = 70;
+
+    JLabel lblId = new JLabel("Student ID:");
+    lblId.setBounds(labelX, top, labelW, height);
+    add(lblId);
+    txtId = new JTextField();
+    txtId.setBounds(tfX, top, tfW, height);
+    add(txtId);
+
+    JLabel lblName = new JLabel("Student Name:");
+    lblName.setBounds(labelX, top + 40, labelW, height);
+    add(lblName);
+    txtName = new JTextField();
+    txtName.setBounds(tfX, top + 40, tfW, height);
+    add(txtName);
+
+    JLabel lblMarks = new JLabel("Score:");
+    lblMarks.setBounds(labelX, top + 80, labelW, height);
+    add(lblMarks);
+    txtMarks = new JTextField();
+    txtMarks.setBounds(tfX, top + 80, tfW, height);
+    add(txtMarks);
+
+    JButton btnAdd = new JButton("Add");
+    btnAdd.setBounds(labelX, top + 130, 80, height);
+    add(btnAdd);
+
+    JButton btnEdit = new JButton("Edit");
+    btnEdit.setBounds(labelX + 90, top + 130, 80, height);
+    add(btnEdit);
+
+    JButton btnDelete = new JButton("Delete");
+    btnDelete.setBounds(labelX + 180, top + 130, 80, height);
+    add(btnDelete);
+
+    JButton btnSort = new JButton("Sort by Marks");
+    btnSort.setBounds(labelX, top + 170, 130, height);
+    add(btnSort);
+
+    
+
+// Đẩy textbox và nút Search xuống hàng riêng
+txtSearch = new JTextField();
+txtSearch.setBounds(labelX, top + 210, 200, height);
+add(txtSearch);
+
+JButton btnSearch = new JButton("Search");
+btnSearch.setBounds(labelX + 210, top + 210, 100, height);
+add(btnSearch);
+
+    tableModel = new DefaultTableModel(new String[]{"ID", "Name", "Score", "Rank"}, 0);
+    tblStudents = new JTable(tableModel);
+    JScrollPane scrollPane = new JScrollPane(tblStudents);
+    scrollPane.setBounds(350, 70, 420, 350);
+    add(scrollPane);
+    // Event Handling
+    btnAdd.addActionListener(e -> addStudent());
+    btnEdit.addActionListener(e -> editStudent());
+    btnDelete.addActionListener(e -> deleteStudent());
+    btnSort.addActionListener(e -> {
+        controller.sortByMarksDesc();
+        refreshTable();
+    });
+    btnSearch.addActionListener(e -> searchStudents());
+}
+    private void addStudent() {
+        if (txtId.getText().trim().isEmpty() || 
+    txtName.getText().trim().isEmpty() || 
+    txtMarks.getText().trim().isEmpty()) {
+    
+    JOptionPane.showMessageDialog(this, "Please enter Student ID, Name, and Marks!", "Notification", JOptionPane.WARNING_MESSAGE);
+    return;}
+        String id = txtId.getText();
+        String name = txtName.getText();
+        double marks = Double.parseDouble(txtMarks.getText());
+        if (marks >10 || marks <0)
+        {JOptionPane.showMessageDialog(this, "Please enter score in numbers from 1 to 10", "Notification", JOptionPane.WARNING_MESSAGE);
+    }
+        controller.addStudent(new StudentModel(id, name, marks));
+        refreshTable();
+        controller.clearFields();
+    }
+
+    private void editStudent() {
+        int row = tblStudents.getSelectedRow();
+        if (row >= 0) {
+            String id = txtId.getText();
+            String name = txtName.getText();
+            double marks = Double.parseDouble(txtMarks.getText());
+
+            controller.updateStudent(row, new StudentModel(id, name, marks));
+            refreshTable();
+        }
+        else 
+        {
+            JOptionPane.showMessageDialog(this, "You need to select a row in the table to proceed!", "Notification", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+    private void deleteStudent() {
+        int row = tblStudents.getSelectedRow();
+        if (row >= 0) {
+            controller.deleteStudent(row);
+            refreshTable();
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(this, "You need to select a row in the table to proceed!", "Notification", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+    private void searchStudents() {
+    String keyword = txtSearch.getText();
+    tableModel.setRowCount(0);
+    List<StudentModel> results = controller.searchStudents(keyword);
+    if (results.isEmpty()) {
+        JOptionPane.showMessageDialog(null, "No results found", "Notification", JOptionPane.INFORMATION_MESSAGE);
+        return;
+    }
+    for (StudentModel s : results) {
+        tableModel.addRow(new Object[]{s.getStudentId(), s.getFullName(), s.getMarks(), s.getRank()});
+    }
+}
+    private void refreshTable() {
+        tableModel.setRowCount(0);
+        for (StudentModel s : controller.getStudentList()) {
+            tableModel.addRow(new Object[]{s.getStudentId(), s.getFullName(), s.getMarks(), s.getRank()});
+        }
+    }
+    // </editor-fold>
+   
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
+    private void initComponents() {
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 400, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 300, Short.MAX_VALUE)
+        );
+
+        pack();
+    }// </editor-fold>                        
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+     new MainJFrame().setVisible(true);
+    }  
+}
