@@ -1,0 +1,54 @@
+public class StudentController {
+    
+  private final List<StudentModel> studentList;
+
+    public StudentController() {
+        studentList = new ArrayList<>();
+    }
+
+    public void addStudent(StudentModel student) {
+        studentList.add(student);
+    }
+
+    public void updateStudent(int index, StudentModel student) {
+        if (index >= 0 && index < studentList.size()) {
+            studentList.set(index, student);
+        }
+    }
+
+    public void deleteStudent(int index) {
+        if (index >= 0 && index < studentList.size()) {
+            studentList.remove(index);
+        }
+    }
+
+    public List<StudentModel> getStudentList() {
+        return studentList;
+    }
+
+    public List<StudentModel> searchStudents(String keyword) {
+        List<StudentModel> result = new ArrayList<>();
+        for (StudentModel s : studentList) {
+            if (s.getStudentId().toLowerCase().contains(keyword.toLowerCase()) ||
+                s.getFullName().toLowerCase().contains(keyword.toLowerCase())) {
+                result.add(s);
+            }
+        }
+        return result;
+    }
+
+    public void sortByMarksDesc() {
+        studentList.sort((s1, s2) -> Double.compare(s2.getMarks(), s1.getMarks()));
+    }
+
+    public void sortByNameAsc() {
+        studentList.sort(Comparator.comparing(StudentModel::getFullName));
+    }  
+    private JTextField txtId, txtName, txtMarks, txtSearch;
+    public void clearFields() {
+    txtId.setText("");
+    txtName.setText("");
+    txtMarks.setText("");
+    txtSearch.setText(""); // Nếu bạn cũng muốn xoá ô tìm kiếm
+}
+}
