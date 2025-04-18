@@ -1,15 +1,9 @@
-package com.mycompany.kimngan;
-
-/**
- *
- * @author Admin
- */
-public class StudentModel {
-      private String studentId;
+public class Model {
+         private String studentId;
     private String fullName;
     private double marks;
 
-    public StudentModel(String studentId, String fullName, double marks) {
+    public Model(String studentId, String fullName, double marks) {
     this.studentId = studentId;
     this.fullName = fullName;
     this.marks = marks;
