@@ -1,34 +1,47 @@
-public class StudentController {
-    
-  private final List<StudentModel> studentList;
+package com.mycompany.manager;
 
-    public StudentController() {
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+import javax.swing.JTextField;
+
+/**
+ *
+ * @author Admin
+ */
+public class Controller {
+    private final List<Model> studentList;
+
+    public Controller() {
         studentList = new ArrayList<>();
     }
 
-    public void addStudent(StudentModel student) {
-        studentList.add(student);
+    public void addStudent(Model student) {
+        studentList.add(student); // O(1)
     }
 
-    public void updateStudent(int index, StudentModel student) {
+    public void updateStudent(int index, Model student) {
         if (index >= 0 && index < studentList.size()) {
-            studentList.set(index, student);
+            studentList.set(index, student); // O(1)
         }
     }
 
     public void deleteStudent(int index) {
         if (index >= 0 && index < studentList.size()) {
-            studentList.remove(index);
+            studentList.remove(index); 
         }
     }
 
-    public List<StudentModel> getStudentList() {
+    public List<Model> getStudentList() {
         return studentList;
     }
 
-    public List<StudentModel> searchStudents(String keyword) {
-        List<StudentModel> result = new ArrayList<>();
-        for (StudentModel s : studentList) {
+    // LINEAR SEARCH 
+    public List<Model> searchStudents(String keyword) {
+        List<Model> result = new ArrayList<>();
+        for (Model s : studentList) {
             if (s.getStudentId().toLowerCase().contains(keyword.toLowerCase()) ||
                 s.getFullName().toLowerCase().contains(keyword.toLowerCase())) {
                 result.add(s);
@@ -37,18 +50,77 @@ public class StudentController {
         return result;
     }
 
+    public Model binarySearchStudentById(String studentId) {
+        List<Model> sortedList = new ArrayList<>(studentList);
+        sortedList.sort(Comparator.comparing(Model::getStudentId));
+
+        int left = 0;
+        int right = sortedList.size() - 1;
+
+        while (left <= right) {
+            int mid = (left + right) / 2;
+            Model midStudent = sortedList.get(mid);
+            int cmp = midStudent.getStudentId().compareToIgnoreCase(studentId);
+
+            if (cmp == 0) {
+                return midStudent;
+            } else if (cmp < 0) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+
+        return null;
+    }
+
     public void sortByMarksDesc() {
         studentList.sort((s1, s2) -> Double.compare(s2.getMarks(), s1.getMarks()));
     }
 
     public void sortByNameAsc() {
-        studentList.sort(Comparator.comparing(StudentModel::getFullName));
-    }  
+        studentList.sort(Comparator.comparing(Model::getFullName));
+    }
+
+    public void quickSortByMarksDesc() {
+        quickSort(0, studentList.size() - 1);
+    }
+
+    private void quickSort(int low, int high) {
+        if (low < high) {
+            int pi = partition(low, high);
+            quickSort(low, pi - 1);
+            quickSort(pi + 1, high);
+        }
+    }
+
+    private int partition(int low, int high) {
+        double pivot = studentList.get(high).getMarks();
+        int i = low - 1;
+        for (int j = low; j < high; j++) {
+            if (studentList.get(j).getMarks() > pivot) {
+                i++;
+                Collections.swap(studentList, i, j);
+            }
+        }
+        Collections.swap(studentList, i + 1, high);
+        return i + 1;
+    }
+
+    public void sortByIdAsc() {
+        studentList.sort(Comparator.comparing(Model::getStudentId));
+    }
+
     private JTextField txtId, txtName, txtMarks, txtSearch;
+
     public void clearFields() {
-    txtId.setText("");
-    txtName.setText("");
-    txtMarks.setText("");
-    txtSearch.setText(""); // Nếu bạn cũng muốn xoá ô tìm kiếm
-}
+        txtId.setText("");
+        txtName.setText("");
+        txtMarks.setText("");
+        txtSearch.setText("");
+    }
+
+    void sortByScoreDesc() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }
